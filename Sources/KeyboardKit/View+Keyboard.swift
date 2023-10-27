@@ -2,7 +2,7 @@ import SwiftUI
 
 private struct KeyboardModifier<KeyboardView>: ViewModifier where KeyboardView: View {
     private let keyboardView: KeyboardView
-    private let keyboardType: UIKeyboardType?
+    private let keyboardConfiguration: KeyboardConfiguration
     
     public func body(content: Content) -> some View {
         content
@@ -13,17 +13,37 @@ private struct KeyboardModifier<KeyboardView>: ViewModifier where KeyboardView: 
                     return
                 }
                 
-                guard keyboardType == nil || textField.keyboardType == keyboardType else {
+                guard
+                    keyboardConfiguration.inputType == nil || keyboardConfiguration.inputType == textField.keyboardType
+                else {
                     return
                 }
                 
-                textField.inputView = InputView(rootView: keyboardView, inputViewStyle: .keyboard)
+                let inputView = InputView(rootView: keyboardView, inputViewStyle: keyboardConfiguration.inputViewStyle)
+                inputView.allowsSelfSizing = keyboardConfiguration.allowsSelfSizing
+                textField.inputView = inputView
             }
     }
     
-    public init(_ keyboardView: KeyboardView, for keyboardType: UIKeyboardType? = nil) {
-        self.keyboardView = keyboardView
-        self.keyboardType = keyboardType
+    public init(_ view: KeyboardView, configuration: KeyboardConfiguration) {
+        self.keyboardView = view
+        self.keyboardConfiguration = configuration
+    }
+}
+
+public struct KeyboardConfiguration {
+    /// One of the keyboard types defined in the UIKeyboardType enumeration. If not provided, a custom keyboard will be used for all types.
+    var inputType: UIKeyboardType?
+    /// Constant that sets the appearance for an input view.
+    var inputViewStyle: UIInputView.Style = .keyboard
+
+    /// A Boolean value that indicates whether the input view is responsible for its own size. If false, the view size is equal to system-wide.
+    var allowsSelfSizing: Bool = false
+    
+    public init(inputType: UIKeyboardType? = nil, inputViewStyle: UIInputView.Style = .keyboard, allowsSelfSizing: Bool = false) {
+        self.inputType = inputType
+        self.inputViewStyle = inputViewStyle
+        self.allowsSelfSizing = allowsSelfSizing
     }
 }
 
@@ -31,9 +51,13 @@ public extension View {
     /// Sets a view as a custom keyboard.
     /// - Parameters:
     ///   - type: One of the keyboard types defined in the UIKeyboardType enumeration. If not provided, a custom keyboard will be used for all types.
-    ///   - allowsSelfSizing: A Boolean value that indicates whether the input view is responsible for its own size. If false, the view size is equal to system-wide.
+    ///   - allowsSelfSizing: A Boolean value that indicates whether the input view is responsible for its own size.
     ///   - content: A ViewBuilder that produces the view for the keyboard.
-    func keyboard(_ type: UIKeyboardType? = nil, allowsSelfSizing: Bool = false, @ViewBuilder _ content: () -> some View) -> some View {
-        modifier(KeyboardModifier(content(), for: type))
+    func keyboard(_ type: UIKeyboardType? = nil, @ViewBuilder _ content: () -> some View) -> some View {
+        modifier(KeyboardModifier(content(), configuration: KeyboardConfiguration(inputType: type)))
+    }
+    
+    func keyboard(configuration: KeyboardConfiguration, @ViewBuilder _ content: () -> some View) -> some View {
+        modifier(KeyboardModifier(content(), configuration: configuration))
     }
 }
