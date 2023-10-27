@@ -50,11 +50,10 @@ public struct KeyboardConfiguration {
 public extension View {
     /// Sets a view as a custom keyboard.
     /// - Parameters:
-    ///   - type: One of the keyboard types defined in the UIKeyboardType enumeration. If not provided, a custom keyboard will be used for all types.
-    ///   - allowsSelfSizing: A Boolean value that indicates whether the input view is responsible for its own size.
+    ///   - inputType: One of the keyboard types defined in the UIKeyboardType enumeration. If not provided, a custom keyboard will be used for all types.
     ///   - content: A ViewBuilder that produces the view for the keyboard.
-    func keyboard(_ type: UIKeyboardType? = nil, @ViewBuilder _ content: () -> some View) -> some View {
-        modifier(KeyboardModifier(content(), configuration: KeyboardConfiguration(inputType: type)))
+    func keyboard(_ inputType: UIKeyboardType? = nil, @ViewBuilder _ content: () -> some View) -> some View {
+        modifier(KeyboardModifier(content(), configuration: KeyboardConfiguration(inputType: inputType)))
     }
     
     func keyboard(configuration: KeyboardConfiguration, @ViewBuilder _ content: () -> some View) -> some View {
