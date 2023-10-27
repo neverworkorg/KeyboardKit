@@ -13,6 +13,11 @@ public struct KeyboardInput {
         inputProxy.insertText(text); inputClick()
     }
     
+    /// Confirms text-entry.
+    public func `return`() {
+        inputProxy.insertText("\n")
+    }
+    
     /// Deletes a character from the displayed text.
     /// - Discussion: Remove the character just before the cursor from your class’s backing store and redisplay the text.
     public func delete() {
