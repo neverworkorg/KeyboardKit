@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUIIntrospect
 
 private struct KeyboardModifier<KeyboardView>: ViewModifier where KeyboardView: View {
     private let keyboardView: KeyboardView
@@ -6,13 +7,7 @@ private struct KeyboardModifier<KeyboardView>: ViewModifier where KeyboardView: 
     
     public func body(content: Content) -> some View {
         content
-            .onReceive(
-                NotificationCenter.default.publisher(for: UITextField.textDidBeginEditingNotification)
-            ) { notification in
-                guard let textField = notification.object as? UITextField else {
-                    return
-                }
-                
+            .introspect(.textField, on: .iOS(.v17), customize: { textField in
                 guard
                     keyboardConfiguration.inputType == nil || keyboardConfiguration.inputType == textField.keyboardType
                 else {
@@ -21,8 +16,8 @@ private struct KeyboardModifier<KeyboardView>: ViewModifier where KeyboardView: 
                 
                 let inputView = InputView(rootView: keyboardView, inputViewStyle: keyboardConfiguration.inputViewStyle)
                 inputView.allowsSelfSizing = keyboardConfiguration.allowsSelfSizing
-                textField.inputView = inputView
-            }
+                textField.inputView = inputView; textField.reloadInputViews()
+            })
     }
     
     public init(_ view: KeyboardView, configuration: KeyboardConfiguration) {

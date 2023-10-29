@@ -15,7 +15,7 @@ public struct KeyboardInput {
     
     /// Confirms text-entry.
     public func `return`() {
-        inputProxy.insertText("\n")
+        inputProxy.insertText("\n"); inputClick()
     }
     
     /// Deletes a character from the displayed text.
