@@ -22,7 +22,7 @@ private struct KeyboardModifier<KeyboardView>: ViewModifier where KeyboardView: 
 }
 
 public struct KeyboardConfiguration {
-    /// One of the keyboard types defined in the UIKeyboardType enumeration. If not provided, a custom keyboard will be used for all types.
+    /// One of the keyboard types defined in the UIKeyboardType enumeration.
     var inputType: UIKeyboardType = .default
     /// Constant that sets the appearance for an input view.
     var inputViewStyle: UIInputView.Style = .keyboard
@@ -40,7 +40,7 @@ public struct KeyboardConfiguration {
 public extension View {
     /// Sets a view as a custom keyboard.
     /// - Parameters:
-    ///   - inputType: One of the keyboard types defined in the UIKeyboardType enumeration. If not provided, a custom keyboard will be used for all types.
+    ///   - inputType: One of the keyboard types defined in the UIKeyboardType enumeration.
     ///   - content: A ViewBuilder that produces the view for the keyboard.
     func keyboard(_ inputType: UIKeyboardType = .default, @ViewBuilder _ content: () -> some View) -> some View {
         modifier(KeyboardModifier(content(), configuration: KeyboardConfiguration(inputType: inputType)))
